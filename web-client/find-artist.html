@@ -1,0 +1,72 @@
+<head>
+	<title>Artist Guess</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container col-lg-8" style="position: relative;top: 20%;">
+        <div style="padding-bottom: 10px" style="display: flex;">
+            <div class="card text-center bg-light" style="border: none; display: flex;">
+			<font size="5"><b>Guess Artist</b></font><br>
+                <div class="card-body" style="padding-bottom: 10px">
+                    <input class="card-title form-control" type="text" id="input" name="input" placeholder="Enter URL of the image you want to be guessed"/>
+                    <button class="card-text btn btn-outline-primary" id="btn">Guess</button>
+                    <div class="spinner" id="spinner" style="display: none">
+						<div class="double-bounce1"></div>
+						<div class="double-bounce2"></div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white" style="padding-top: 10px; padding-right: 10px; padding-bottom: 20px; padding-left: 10px">
+						<div class="item" id="api_output_1"></div><div class="item" id="api_output_2"></div><br><div class="item" id="api_output_3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script type="text/javascript">
+    function api_call(input) {
+        $.ajax({
+            url: "/find_artist",
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(input),
+            success: function( data, jQxhr ){
+				html_artist = "Artist: <b>" + data.artist + "</b><br>"
+				html_probability = "Probability: <b>" + data.probability + "</b>"
+				html_img = "<img src=\"" + input + "\" height=\"300px\" width=\"300px\">"
+				console.log(html_img)
+                $("#api_output_1").html(html_artist);
+				$("#api_output_2").html(html_probability);
+				$("#api_output_3").html(html_img);
+                $("#input").val("");
+            },
+            error: function( jqXhr, errorThrown ){
+                $("#api_output_1").html( "There was an error" );
+				$("#api_output_2").html("");
+				$("#api_output_3").html("");
+                console.log( errorThrown );
+            },
+            timeout: 60000
+        });
+    }
+    $( document ).ready(function() {
+        // request when clicking on the button
+        $('#btn').click(function() {
+            // get the input data
+            var input = $("#input").val();
+            api_call(input);
+            input = "";
+        });
+		// reset everything
+        $('#btn_reset').click(function() {
+            // get the input data
+            $("#input").val("");
+			$("#api_output_1").html("");
+			$("#api_output_2").html("");
+			$("#api_output_3").html("");
+        });
+    });
+</script>
